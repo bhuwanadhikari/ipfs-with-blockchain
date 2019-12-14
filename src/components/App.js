@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from '../logo.png';
 import './App.css';
 
 const ipfsClient = require('ipfs-http-client');
@@ -14,10 +13,11 @@ class App extends Component {
 
     this.state = {
       buffer: null,
+      memeHash: '',
     }
   }
 
-
+  //QmVGDoQXEjLdcQqPCK5XWcPCbvZkKMJA8e86r9WhaAxv15
   fileChanged = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -31,6 +31,7 @@ class App extends Component {
 
   fileSubmitted = (e) => {
     e.preventDefault();
+    console.log("Submitteing");
     ipfs.add(this.state.buffer, (err, result) => {
       //do stuffs here 
       if (err) {
@@ -39,6 +40,9 @@ class App extends Component {
       }
 
       console.log('resut of ipfs', result);
+      this.setState({ memeHash: result[0].path });
+      // store the file on blockchain
+
 
     });
   }
@@ -67,7 +71,7 @@ class App extends Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <img src={logo} className="App-logo" alt="logo" />
+                  <img src={`https://ipfs.infura.io/ipfs/${this.state.memeHash}`} className="App-logo" alt="logo" />
                 </a>
                 <h1>Meme of the day.</h1>
                 <form onSubmit={this.fileSubmitted}>
