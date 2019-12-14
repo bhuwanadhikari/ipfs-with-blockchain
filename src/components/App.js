@@ -2,7 +2,49 @@ import React, { Component } from 'react';
 import logo from '../logo.png';
 import './App.css';
 
+const ipfsClient = require('ipfs-http-client');
+const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' });
+
+
+
 class App extends Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      buffer: null,
+    }
+  }
+
+
+  fileChanged = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    const reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = () => {
+      this.setState({ buffer: Buffer(reader.result) });
+    }
+
+  }
+
+  fileSubmitted = (e) => {
+    e.preventDefault();
+    ipfs.add(this.state.buffer, (err, result) => {
+      //do stuffs here 
+      if (err) {
+        console.log("Error ", err);
+        return;
+      }
+
+      console.log('resut of ipfs', result);
+
+    });
+  }
+
+
+
   render() {
     return (
       <div>
@@ -13,7 +55,7 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            IPFS Meme Saver in Blockchain
           </a>
         </nav>
         <div className="container-fluid mt-5">
@@ -27,18 +69,11 @@ class App extends Component {
                 >
                   <img src={logo} className="App-logo" alt="logo" />
                 </a>
-                <h1>Dapp University Starter Kit</h1>
-                <p>
-                  Edit <code>src/components/App.js</code> and save to reload.
-                </p>
-                <a
-                  className="App-link"
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LEARN BLOCKCHAIN <u><b>NOW! </b></u>
-                </a>
+                <h1>Meme of the day.</h1>
+                <form onSubmit={this.fileSubmitted}>
+                  <input onChange={this.fileChanged} type='file' />
+                  <input type='submit' />
+                </form>
               </div>
             </main>
           </div>
